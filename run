@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+APP=my-test-app
+
+echo when prompted hit enter and choose scala app
+play new $APP 
+
+cp files/conf/application.conf $APP/conf/application.conf
+cp files/conf/application-logger.xml $APP/conf/application-logger.xml
+cp files/app/controllers/Application.scala $APP/app/controllers/Application.scala
+
+cd $APP 
+play dist
+
+PKG_NAME=$APP-1.0-SNAPSHOT
+
+unzip target/universal/$PKG_NAME.zip
+
+sed -i '' 's/This is an env var/External conf folder/' $PKG_NAME/conf/application.conf
+
+echo If the log says 'External conf folder' the conf file is being read from the external conf folder
+chmod +x ./$PKG_NAME/bin/$APP
+./$PKG_NAME/bin/$APP
+
